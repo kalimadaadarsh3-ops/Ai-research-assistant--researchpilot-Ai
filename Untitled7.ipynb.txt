@@ -1,0 +1,244 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": [
+        "pip install google-genai duckduckgo-search python-dotenv"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "meEZEa5MAx_y",
+        "outputId": "26ea7dc1-f359-45a5-b6cd-95db174cbbfc"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: google-genai in /usr/local/lib/python3.13/dist-packages (2.12.1)\n",
+            "Collecting duckduckgo-search\n",
+            "  Downloading duckduckgo_search-8.1.1-py3-none-any.whl.metadata (16 kB)\n",
+            "Requirement already satisfied: python-dotenv in /usr/local/lib/python3.13/dist-packages (1.2.3)\n",
+            "Requirement already satisfied: anyio<5.0.0,>=4.8.0 in /usr/local/lib/python3.13/dist-packages (from google-genai) (4.15.1)\n",
+            "Requirement already satisfied: google-auth<2.56.0,>=2.48.1 in /usr/local/lib/python3.13/dist-packages (from google-auth[requests]<2.56.0,>=2.48.1->google-genai) (2.49.0)\n",
+            "Requirement already satisfied: httpx<1.0.0,>=0.28.1 in /usr/local/lib/python3.13/dist-packages (from google-genai) (0.28.1)\n",
+            "Requirement already satisfied: pydantic<3.0.0,>=2.12.5 in /usr/local/lib/python3.13/dist-packages (from google-genai) (2.13.5)\n",
+            "Requirement already satisfied: requests<3.0.0,>=2.28.1 in /usr/local/lib/python3.13/dist-packages (from google-genai) (2.32.4)\n",
+            "Requirement already satisfied: tenacity<9.2.0,>=8.2.3 in /usr/local/lib/python3.13/dist-packages (from google-genai) (9.1.4)\n",
+            "Requirement already satisfied: websockets<17.0,>=13.0.0 in /usr/local/lib/python3.13/dist-packages (from google-genai) (15.0.1)\n",
+            "Requirement already satisfied: typing-extensions<5.0.0,>=4.14.0 in /usr/local/lib/python3.13/dist-packages (from google-genai) (4.16.0)\n",
+            "Requirement already satisfied: distro<2,>=1.7.0 in /usr/local/lib/python3.13/dist-packages (from google-genai) (1.9.0)\n",
+            "Requirement already satisfied: sniffio in /usr/local/lib/python3.13/dist-packages (from google-genai) (1.3.1)\n",
+            "Requirement already satisfied: click>=8.1.8 in /usr/local/lib/python3.13/dist-packages (from duckduckgo-search) (8.5.0)\n",
+            "Collecting primp>=0.15.0 (from duckduckgo-search)\n",
+            "  Downloading primp-2.0.1-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.9 kB)\n",
+            "Requirement already satisfied: lxml>=5.3.0 in /usr/local/lib/python3.13/dist-packages (from duckduckgo-search) (6.1.3)\n",
+            "Requirement already satisfied: idna>=2.8 in /usr/local/lib/python3.13/dist-packages (from anyio<5.0.0,>=4.8.0->google-genai) (3.20)\n",
+            "Requirement already satisfied: pyasn1-modules>=0.2.1 in /usr/local/lib/python3.13/dist-packages (from google-auth<2.56.0,>=2.48.1->google-auth[requests]<2.56.0,>=2.48.1->google-genai) (0.4.2)\n",
+            "Requirement already satisfied: cryptography>=38.0.3 in /usr/local/lib/python3.13/dist-packages (from google-auth<2.56.0,>=2.48.1->google-auth[requests]<2.56.0,>=2.48.1->google-genai) (50.0.2)\n",
+            "Requirement already satisfied: rsa<5,>=3.1.4 in /usr/local/lib/python3.13/dist-packages (from google-auth<2.56.0,>=2.48.1->google-auth[requests]<2.56.0,>=2.48.1->google-genai) (4.9.1)\n",
+            "Requirement already satisfied: certifi in /usr/local/lib/python3.13/dist-packages (from httpx<1.0.0,>=0.28.1->google-genai) (2026.7.22)\n",
+            "Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.13/dist-packages (from httpx<1.0.0,>=0.28.1->google-genai) (1.0.9)\n",
+            "Requirement already satisfied: h11>=0.16 in /usr/local/lib/python3.13/dist-packages (from httpcore==1.*->httpx<1.0.0,>=0.28.1->google-genai) (0.16.0)\n",
+            "Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.13/dist-packages (from pydantic<3.0.0,>=2.12.5->google-genai) (0.8.0)\n",
+            "Requirement already satisfied: pydantic-core==2.46.5 in /usr/local/lib/python3.13/dist-packages (from pydantic<3.0.0,>=2.12.5->google-genai) (2.46.5)\n",
+            "Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.13/dist-packages (from pydantic<3.0.0,>=2.12.5->google-genai) (0.4.4)\n",
+            "Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.13/dist-packages (from requests<3.0.0,>=2.28.1->google-genai) (3.4.9)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.13/dist-packages (from requests<3.0.0,>=2.28.1->google-genai) (2.5.0)\n",
+            "Requirement already satisfied: cffi>=2.0.0 in /usr/local/lib/python3.13/dist-packages (from cryptography>=38.0.3->google-auth<2.56.0,>=2.48.1->google-auth[requests]<2.56.0,>=2.48.1->google-genai) (2.1.1)\n",
+            "Requirement already satisfied: pyasn1<0.7.0,>=0.6.1 in /usr/local/lib/python3.13/dist-packages (from pyasn1-modules>=0.2.1->google-auth<2.56.0,>=2.48.1->google-auth[requests]<2.56.0,>=2.48.1->google-genai) (0.6.4)\n",
+            "Requirement already satisfied: pycparser in /usr/local/lib/python3.13/dist-packages (from cffi>=2.0.0->cryptography>=38.0.3->google-auth<2.56.0,>=2.48.1->google-auth[requests]<2.56.0,>=2.48.1->google-genai) (3.0)\n",
+            "Downloading duckduckgo_search-8.1.1-py3-none-any.whl (18 kB)\n",
+            "Downloading primp-2.0.1-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (6.6 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m6.6/6.6 MB\u001b[0m \u001b[31m82.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: primp, duckduckgo-search\n",
+            "Successfully installed duckduckgo-search-8.1.1 primp-2.0.1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "export GEMINI_API_KEY=\"AQ.Ab8RN6KPsi8NiSt7fbuE1nE4TKKgiioF4Dp4tFH5xsa4bPBxdw\""
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 179
+        },
+        "id": "jcVpXZcWDLhL",
+        "outputId": "dcc97aa7-6b84-4705-c2d5-0056ed8c9042"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "SyntaxError",
+          "evalue": "invalid syntax (2377885344.py, line 1)",
+          "traceback": [
+            "\u001b[0;36m  File \u001b[0;32m\"/tmp/ipykernel_753/2377885344.py\"\u001b[0;36m, line \u001b[0;32m1\u001b[0m\n\u001b[0;31m    export GEMINI_API_KEY=\"AQ.Ab8RN6KPsi8NiSt7fbuE1nE4TKKgiioF4Dp4tFH5xsa4bPBxdw\"\u001b[0m\n\u001b[0m           ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m invalid syntax\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "import os\n",
+        "import json\n",
+        "from dotenv import load_dotenv\n",
+        "from duckduckgo_search import DDGS\n",
+        "from google import genai\n",
+        "from google.genai import types\n",
+        "\n",
+        "# Load environment variables\n",
+        "load_dotenv()\n",
+        "\n",
+        "API_KEY = os.getenv(\"GEMINI_API_KEY\")\n",
+        "if not API_KEY:\n",
+        "    raise ValueError(\"GEMINI_API_KEY environment variable not set. Please set it before running.\")\n",
+        "\n",
+        "# Initialize Gemini Client\n",
+        "client = genai.Client(api_key=API_KEY)\n",
+        "\n",
+        "\n",
+        "def web_search(query: str, max_results: int = 5) -> str:\n",
+        "    \"\"\"\n",
+        "    Performs a DuckDuckGo search for the given query and returns snippets and links.\n",
+        "\n",
+        "    Args:\n",
+        "        query: Search term or question.\n",
+        "        max_results: Maximum number of search results to retrieve.\n",
+        "    \"\"\"\n",
+        "    results = []\n",
+        "    try:\n",
+        "        with DDGS() as ddgs:\n",
+        "            for item in ddgs.text(query, max_results=max_results):\n",
+        "                results.append({\n",
+        "                    \"title\": item.get(\"title\", \"\"),\n",
+        "                    \"snippet\": item.get(\"body\", \"\"),\n",
+        "                    \"url\": item.get(\"href\", \"\")\n",
+        "                })\n",
+        "        return json.dumps(results, indent=2)\n",
+        "    except Exception as e:\n",
+        "        return f\"Search error: {str(e)}\"\n",
+        "\n",
+        "\n",
+        "SYSTEM_PROMPT = \"\"\"\n",
+        "You are ResearchPilot, an expert AI Research Assistant.\n",
+        "Your goal is to perform thorough, evidence-based research on any topic requested by the user.\n",
+        "\n",
+        "Workflow:\n",
+        "1. Break down the user's research topic into specific web queries.\n",
+        "2. Use the `web_search` tool to gather factual information.\n",
+        "3. Perform multiple searches if necessary to gather balanced and deep information.\n",
+        "4. Synthesize all gathered data into a clear, professional Markdown Research Report.\n",
+        "\n",
+        "Your final report must include:\n",
+        "- Executive Summary\n",
+        "- Key Concepts & Core Analysis\n",
+        "- Recent Developments or Current Trends\n",
+        "- Pros & Cons / Technical Trade-offs (if applicable)\n",
+        "- Citations & Sources (include links from search results)\n",
+        "\"\"\"\n",
+        "\n",
+        "\n",
+        "def run_research_assistant(topic: str):\n",
+        "    \"\"\"Executes the research agent workflow using Gemini function calling.\"\"\"\n",
+        "    print(f\"\\n🚀 Starting Research on: '{topic}'...\\n\" + \"=\" * 60)\n",
+        "\n",
+        "    # Available tools for function calling\n",
+        "    tools = [web_search]\n",
+        "\n",
+        "    # Initialize chat session with system instructions and tools\n",
+        "    config = types.GenerateContentConfig(\n",
+        "        system_instruction=SYSTEM_PROMPT,\n",
+        "        temperature=0.3,\n",
+        "        tools=tools\n",
+        "    )\n",
+        "\n",
+        "    # Create model configuration (using gemini-2.5-flash for speed and tool reasoning)\n",
+        "    chat = client.chats.create(model=\"gemini-2.5-flash\", config=config)\n",
+        "\n",
+        "    # Initial prompt to trigger research\n",
+        "    prompt = f\"Please conduct a comprehensive research project on the following topic: {topic}\"\n",
+        "\n",
+        "    response = chat.send_message(prompt)\n",
+        "\n",
+        "    # Tool Execution Loop: Keeps handling tool calls until Gemini produces a final answer\n",
+        "    while response.function_calls:\n",
+        "        for call in response.function_calls:\n",
+        "            fn_name = call.name\n",
+        "            fn_args = call.args\n",
+        "\n",
+        "            print(f\"🔍 [Tool Call] {fn_name}(query='{fn_args.get('query')}')\")\n",
+        "\n",
+        "            # Execute tool\n",
+        "            if fn_name == \"web_search\":\n",
+        "                tool_output = web_search(**fn_args)\n",
+        "            else:\n",
+        "                tool_output = f\"Unknown function: {fn_name}\"\n",
+        "\n",
+        "            # Pass the function result back to the model\n",
+        "            response = chat.send_message(\n",
+        "                types.Part.from_function_response(\n",
+        "                    name=fn_name,\n",
+        "                    response={\"result\": tool_output}\n",
+        "                )\n",
+        "            )\n",
+        "\n",
+        "    print(\"\\n\" + \"=\" * 60)\n",
+        "    print(\"📝 FINAL RESEARCH REPORT:\")\n",
+        "    print(\"=\" * 60 + \"\\n\")\n",
+        "    print(response.text)\n",
+        "\n",
+        "\n",
+        "if __name__ == \"__main__\":\n",
+        "    # Specify your research topic here\n",
+        "    research_topic = \"Quantum Computing breakthrough applications in medicine for 2025-2026\"\n",
+        "    run_research_assistant(research_topic)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 384
+        },
+        "id": "dwJffFTKDcEb",
+        "outputId": "516d8ee8-770a-4442-85a4-acf9cb07837c"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "ValueError",
+          "evalue": "GEMINI_API_KEY environment variable not set. Please set it before running.",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+            "\u001b[0;32m/tmp/ipykernel_753/1257899606.py\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     11\u001b[0m \u001b[0mAPI_KEY\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mos\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mgetenv\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"GEMINI_API_KEY\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     12\u001b[0m \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0mAPI_KEY\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 13\u001b[0;31m     \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"GEMINI_API_KEY environment variable not set. Please set it before running.\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     14\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     15\u001b[0m \u001b[0;31m# Initialize Gemini Client\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mValueError\u001b[0m: GEMINI_API_KEY environment variable not set. Please set it before running."
+          ]
+        }
+      ]
+    }
+  ]
+}
